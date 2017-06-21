@@ -1,3 +1,52 @@
 <!-- embed svg in template -->
 
 {% include active_theme_path() ~ '/bower_components/Font-Awesome-SVG-PNG/black/svg/search.svg' %}
+
+<!-- set classes and attributes -->
+
+<ul{{ attributes.addClass('main-menu dropdown menu').setAttribute('data-responsive-menu', 'accordion large-dropdown') }}>
+
+
+
+<!-- menu with svg icons -->
+
+{% import _self as menus %}
+
+{#
+  We call a macro which calls itself to render the full tree.
+  @see http://twig.sensiolabs.org/doc/tags/macro.html
+#}
+{{ menus.menu_links(items, attributes, 0) }}
+
+{% macro menu_links(items, attributes, menu_level) %}
+
+{#setting a var for later use #}
+{% set icon_path = active_theme_path() ~ '/bower_components/Font-Awesome-SVG-PNG/black/svg/' %}
+
+  {% import _self as menus %}
+  {% if items %}
+    {% if menu_level == 0 %}
+      <ul{{ attributes.addClass('vertical large-horizontal main-menu dropdown menu').setAttribute('data-responsive-menu', 'accordion large-dropdown') }}>
+    {% else %}
+      <ul class="menu">
+    {% endif %}
+    {% for item in items %}
+      <li{{ item.attributes }}>
+        
+      {# menu item with icon: #}
+        {% if item.title == 'Contact Us' %}
+          <a href="{{ item.url }}">{% include icon_path ~ 'envelope-cropped.svg' %}{{ item.title }}</a>
+        
+        {% else %}
+          {{ link(item.title, item.url) }}
+        {% endif %}
+
+        {% if item.below %}
+          {{ menus.menu_links(item.below, attributes, menu_level + 1) }}
+        {% endif %}
+        
+      </li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endmacro %}
